@@ -1,6 +1,5 @@
 Import('env')
 
-src = Glob('*.c')
-objs = env.Object(src)
+sources = Glob('*.c')
 
-Return('objs')
+Return('sources')

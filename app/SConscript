@@ -1,8 +1,5 @@
 Import('env')
 
-src = Glob('*.c')
+sources = Glob('*.c')
 
-# 编译成.o文件
-objs = env.Object(src)
-
-Return('objs')
+Return('sources')

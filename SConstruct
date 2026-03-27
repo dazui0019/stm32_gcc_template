@@ -3,6 +3,7 @@ import os
 target_mcu = ARGUMENTS.get('target_mcu', 'stm32f4')
 target_chip = ARGUMENTS.get('target_chip', 'stm32f446xx')
 board_name = ARGUMENTS.get('board', 'test_board_v1')
+build_dir = 'build'
 
 toolchain_bin = os.path.abspath(
     # os.path.join()用来拼接路径
@@ -33,6 +34,7 @@ env = Environment(
 # core_flags = ['-mcpu=cortex-m4', '-mthumb', '-mfpu=fpv4-sp-d16', '-mfloat-abi=hard', "-ffunction-sections", "-fdata-sections"]
 chip_define = 'STM32F' + target_chip[len('stm32f'):]
 linker_script = os.path.join('targets', target_mcu, 'links', f'{chip_define}_FLASH.ld')
+map_file = os.path.join(build_dir, 'firmware.map')
 
 env.AppendUnique(
     CPPPATH=[
@@ -79,7 +81,7 @@ env.Append( LINKFLAGS = [
     '-specs=nosys.specs',
     '-static',
     '-Wl,-cref,-u,Reset_Handler',
-    '-Wl,-Map=main.map',
+    f'-Wl,-Map={map_file}',
     '-Wl,--gc-sections',
     '-Wl,--defsym=malloc_getpagesize_P=0x80',
     '-Wl,--start-group',
@@ -93,7 +95,7 @@ env.Append( LINKFLAGS = [
 
 Export('env', 'target_chip')
 
-objs = []
+sources = []
 
 for script in [
     os.path.join('app', 'SConscript'),
@@ -104,6 +106,21 @@ for script in [
     os.path.join('bsp', board_name, 'SConscript'),
 ]:
     if os.path.exists(script):
-        objs += SConscript(script)
+        sources += SConscript(script)
 
-elf = env.Program('firmware.elf', objs)
+objects = []
+
+for source in sources:
+    source_path = source.srcnode().path
+    object_path = os.path.join(
+        build_dir,
+        os.path.splitext(source_path)[0] + env['OBJSUFFIX'],
+    )
+    objects += env.Object(object_path, source)
+
+elf = env.Program(os.path.join(build_dir, 'firmware.elf'), objects)
+env.Command(
+    os.path.join(build_dir, 'firmware.bin'),
+    elf,
+    '$OBJCOPY -O binary $SOURCE $TARGET',
+)

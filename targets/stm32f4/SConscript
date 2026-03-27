@@ -1,10 +1,8 @@
 Import('env', 'target_chip')
 
-src = [
-    'cmsis/Source/Templates/system_stm32f4xx.c',
-    f'cmsis/Source/Templates/gcc/startup_{target_chip}.s',
+sources = [
+    File('cmsis/Source/Templates/system_stm32f4xx.c'),
+    File(f'cmsis/Source/Templates/gcc/startup_{target_chip}.s'),
 ]
 
-objs = env.Object(src)
-
-Return('objs')
+Return('sources')
