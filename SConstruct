@@ -31,6 +31,9 @@ env = Environment(
     PROGSUFFIX='.elf',
 )
 
+env.Tool('compilation_db')
+env['COMPILATIONDB_USE_ABSPATH'] = True
+
 # core_flags = ['-mcpu=cortex-m4', '-mthumb', '-mfpu=fpv4-sp-d16', '-mfloat-abi=hard', "-ffunction-sections", "-fdata-sections"]
 chip_define = 'STM32F' + target_chip[len('stm32f'):]
 linker_script = os.path.join('targets', target_mcu, 'links', f'{chip_define}_FLASH.ld')
@@ -119,8 +122,11 @@ for source in sources:
     objects += env.Object(object_path, source)
 
 elf = env.Program(os.path.join(build_dir, 'firmware.elf'), objects)
-env.Command(
+firmware_bin = env.Command(
     os.path.join(build_dir, 'firmware.bin'),
     elf,
     '$OBJCOPY -O binary $SOURCE $TARGET',
 )
+compdb = env.CompilationDatabase(os.path.join(build_dir, 'compile_commands.json'))
+
+Default([elf, firmware_bin, compdb])
