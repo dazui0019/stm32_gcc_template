@@ -7,3 +7,4 @@ toolchain/
 .venv/
 __pycache__/
 *.pyc
+*.map

@@ -20,18 +20,19 @@ if not target_chip.startswith('stm32f'):
     Exit('Unsupported target_chip: %s' % target_chip)
 
 env = Environment(
-    tools=['gcc', 'gnulink', 'gas'],
+    # tools=['default', 'ninja'],
     CC=os.path.join(toolchain_bin, 'arm-none-eabi-gcc.exe'),
-    AS=os.path.join(toolchain_bin, 'arm-none-eabi-gcc.exe'),
+    AS=os.path.join(toolchain_bin, 'arm-none-eabi-as.exe'),
+    AR=os.path.join(toolchain_bin, 'arm-none-eabi-ar.exe'),
     LINK=os.path.join(toolchain_bin, 'arm-none-eabi-gcc.exe'),
     OBJCOPY=os.path.join(toolchain_bin, 'arm-none-eabi-objcopy.exe'),
     OBJSUFFIX='.o',
     PROGSUFFIX='.elf',
 )
 
-core_flags = ['-mcpu=cortex-m4', '-mthumb', '-mfpu=fpv4-sp-d16', '-mfloat-abi=hard']
+# core_flags = ['-mcpu=cortex-m4', '-mthumb', '-mfpu=fpv4-sp-d16', '-mfloat-abi=hard', "-ffunction-sections", "-fdata-sections"]
 chip_define = 'STM32F' + target_chip[len('stm32f'):]
-linker_script = os.path.join('targets', target_mcu, 'link', f'{chip_define}_FLASH.ld')
+linker_script = os.path.join('targets', target_mcu, 'links', f'{chip_define}_FLASH.ld')
 
 env.AppendUnique(
     CPPPATH=[
@@ -45,10 +46,50 @@ env.AppendUnique(
 
 env.Append(
     CPPDEFINES=[chip_define, 'USE_LL_DRIVER'],
-    CCFLAGS=core_flags + ['-O2', '-g', '-Wall'],
-    ASFLAGS=core_flags,
-    LINKFLAGS=core_flags + ['-T', linker_script, '--specs=nano.specs', '-Wl,--gc-sections'],
 )
+
+# Compiler flags
+env.Append( CCFLAGS = [
+    '-mthumb',
+    '-mcpu=cortex-m4',
+    '-mfloat-abi=hard',
+    '-mfpu=fpv4-sp-d16',
+    '-std=gnu11',
+    '-Ofast',
+    '-ffunction-sections',
+    '-fdata-sections',
+    '-g',
+    '-Wall',
+    '-specs=nano.specs',
+])
+
+env.Append( ASFLAGS = [
+    '-mcpu=cortex-m4',
+    '-mthumb',
+    '-mfpu=fpv4-sp-d16',
+    '-mfloat-abi=hard',
+])
+
+# Linker flags
+env.Append( LINKFLAGS = [
+	'-mthumb',
+    '-mcpu=cortex-m4',
+    '-mfloat-abi=hard',
+    '-mfpu=fpv4-sp-d16',
+    '-specs=nosys.specs',
+    '-static',
+    '-Wl,-cref,-u,Reset_Handler',
+    '-Wl,-Map=main.map',
+    '-Wl,--gc-sections',
+    '-Wl,--defsym=malloc_getpagesize_P=0x80',
+    '-Wl,--start-group',
+    '-lc',
+    '-lm',
+    '-Wl,--end-group',
+    '-specs=nano.specs',
+    '-Wl,--print-memory-usage',
+    '-T' + linker_script,
+]) 
 
 Export('env', 'target_chip')
 
@@ -66,4 +107,3 @@ for script in [
         objs += SConscript(script)
 
 elf = env.Program('firmware.elf', objs)
-env.Command('firmware.bin', elf, '$OBJCOPY -O binary $SOURCE $TARGET')
