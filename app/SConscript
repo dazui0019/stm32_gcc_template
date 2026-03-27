@@ -1,0 +1,8 @@
+Import('env')
+
+src = Glob('*.c')
+
+# 编译成.o文件
+objs = env.Object(src)
+
+Return('objs')
