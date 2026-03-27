@@ -44,7 +44,7 @@ env.AppendUnique(
 )
 
 env.Append(
-    CPPDEFINES=[chip_define, 'USE_HAL_DRIVER'],
+    CPPDEFINES=[chip_define, 'USE_LL_DRIVER'],
     CCFLAGS=core_flags + ['-O2', '-g', '-Wall'],
     ASFLAGS=core_flags,
     LINKFLAGS=core_flags + ['-T', linker_script, '--specs=nano.specs', '-Wl,--gc-sections'],
