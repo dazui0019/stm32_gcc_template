@@ -4,3 +4,6 @@ toolchain/
 *.o
 *.elf
 *.bin
+.venv/
+__pycache__/
+*.pyc

@@ -8,7 +8,7 @@ toolchain_bin = os.path.abspath(
     # os.path.join()用来拼接路径
     os.path.join(
         'toolchain',
-        'arm-gnu-toolchain-15.2.rel1-mingw-w64-i686-arm-none-eabi',
+        'mingw-w64-i686-arm-none-eabi',
         'bin',
     )
 )
