@@ -86,6 +86,13 @@ build/compile_commands.json
 - `bsp/` 目录目前作为后续扩展入口预留
 - 当前精简版构建辅助函数位于 `toolchain/building.py`
 
+## 参考项目
+
+- [Flipper Zero Firmware](https://github.com/flipperdevices/flipperzero-firmware)
+  参考其 `furi` 风格的基础设施设计，例如 `check`、公共宏定义和 HAL 接口组织方式。
+- [RT-Thread](https://github.com/RT-Thread/rt-thread)
+  参考其基于 `SCons` 的模块化构建思路，以及 `DefineGroup` 风格的模块注册方式。
+
 ## TODO List
 
 - [ ] 制作类似RT-Thread的Scons框架。
