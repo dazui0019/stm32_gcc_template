@@ -1,0 +1,45 @@
+import os
+
+from building import *
+
+cwd = GetCurrentDir()
+
+# Submodule libraries are configured here in the parent repository.
+# Fill in path/src/CPPPATH manually for each library as needed.
+SUBMODULE_LIBS = [
+    {
+        'name': 'mlib',
+        'path': 'mlib',
+        'src': [],
+        'CPPPATH': ['mlib'],
+    },
+]
+
+
+def RegisterSubmoduleLib(config):
+    lib_name = config['name']
+    lib_path = config['path']
+
+    if not os.path.isdir(os.path.join(cwd, lib_path)):
+        Exit(
+            f'Missing library directory: {lib_path}. '
+            'Did you forget to initialize submodules?'
+        )
+
+    parameters = dict(config)
+    parameters.pop('name')
+    parameters.pop('path')
+    sources = parameters.pop('src', [])
+
+    return DefineGroup(
+        lib_name,
+        sources,
+        **parameters,
+    )
+
+
+for script in FindChildScripts(cwd):
+    SConscript(script)
+
+for lib_config in SUBMODULE_LIBS:
+    RegisterSubmoduleLib(lib_config)

@@ -23,6 +23,7 @@
 |-- app/
 |-- core/
 |-- drivers/
+|-- libs/
 |-- utils/
 |-- targets/
 |   |-- cmsis_core/
@@ -79,6 +80,9 @@ build/compile_commands.json
 - `targets/SConscript` 会根据 `target_mcu` 注册对应目标的启动文件和系统文件
 - `drivers/SConscript` 作为父目录分发器，负责加载各个驱动库子目录
 - 每个驱动库目录独立维护自己的 `src/`、`inc/` 和 `SConscript`
+- `libs/SConscript` 统一接入第三方库
+- 普通本地库可在 `libs/<name>/SConscript` 里维护自己的构建规则
+- 子模块库在 `libs/SConscript` 的 `SUBMODULE_LIBS` 里手动填写 `name`、`path`、`src` 和 `CPPPATH`
 - `bsp/` 目录目前作为后续扩展入口预留
 - 当前精简版构建辅助函数位于 `toolchain/building.py`
 

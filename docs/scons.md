@@ -35,12 +35,17 @@
 
 - `core/SConscript`
 - `utils/SConscript`
+- `libs/SConscript`
 - `drivers/SConscript`
 - `app/SConscript`
 - `targets/SConscript`
 
 其中 `app/SConscript` 还会通过 `FindChildScripts()` 自动加载 `app/` 下直接子目录里的 `SConscript`。
 `drivers/SConscript` 也会通过 `FindChildScripts()` 分发加载 `drivers/` 下各个驱动库目录里的 `SConscript`。
+`libs/SConscript` 则同时支持两种接入方式：
+
+- 普通本地库：在 `libs/<name>/` 下维护自己的 `SConscript`
+- git submodule 等不方便写项目私有脚本的库：在 `libs/SConscript` 里的 `SUBMODULE_LIBS` 统一手动注册
 
 注意：`FindChildScripts()` 当前只扫描一层子目录，不做全工程递归搜索。
 
@@ -217,6 +222,11 @@ for script in FindChildScripts(cwd):
     SConscript(script)
 ```
 
+`libs/` 目录稍微特殊一些，推荐按下面两类方式管理：
+
+- 非 submodule 库：和 `drivers/` 下普通模块一样，在自己的目录里写 `SConscript`
+- submodule 库：不要改子模块内容，在 `libs/SConscript` 的 `SUBMODULE_LIBS` 里手动填写 `name`、`path`、`src`、`CPPPATH`
+
 推荐的 `SConscript` 写法：
 
 ```python
@@ -268,7 +278,46 @@ Return('group')
 - `depend`
 - 自己的 `DefineGroup(...)`
 
-### 8.3 `target`
+### 8.3 `libs`
+
+`libs/SConscript` 当前会做两件事：
+
+- 自动分发加载 `libs/` 下直接子目录里的 `SConscript`
+- 手动注册 `SUBMODULE_LIBS` 里声明的第三方库
+
+当前 `mlib` 作为 header-only submodule，在父仓库中按下面这种方式接入：
+
+```python
+SUBMODULE_LIBS = [
+    {
+        'name': 'mlib',
+        'path': 'mlib',
+        'src': [],
+        'CPPPATH': ['mlib'],
+    },
+]
+```
+
+如果某个 submodule 库带源码，也是在这里显式填写，例如：
+
+```python
+SUBMODULE_LIBS = [
+    {
+        'name': 'foo',
+        'path': 'foo',
+        'src': Glob('foo/src/*.c'),
+        'CPPPATH': ['foo/include'],
+    },
+]
+```
+
+这样可以保证：
+
+- 普通库依然各自维护自己的 `SConscript`
+- submodule 不需要承载项目私有构建脚本
+- 第三方库接入点统一集中在 `libs/SConscript`
+
+### 8.4 `target`
 
 `targets/SConscript` 当前会根据 `target_mcu` 注册：
 
@@ -367,6 +416,34 @@ cwd = GetCurrentDir()
 
 for script in FindChildScripts(cwd):
     SConscript(script)
+```
+
+如果新增的是 `libs/` 下的第三方库，推荐按类型选择：
+
+1. 非 submodule 库
+
+```text
+libs/foo/
+|-- SConscript
+|-- include/
+`-- src/
+```
+
+由 `libs/SConscript` 自动分发加载 `libs/foo/SConscript`。
+
+2. submodule 库
+
+不要修改子模块内部文件，直接在 `libs/SConscript` 的 `SUBMODULE_LIBS` 里增加一项：
+
+```python
+SUBMODULE_LIBS = [
+    {
+        'name': 'foo',
+        'path': 'foo',
+        'src': Glob('foo/src/*.c'),
+        'CPPPATH': ['foo/include'],
+    },
+]
 ```
 
 ## 12. 当前实现和 RT-Thread 的差异
