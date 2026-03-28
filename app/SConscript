@@ -1,12 +1,12 @@
 import os
+
 from building import *
 
-src = Glob('src/*.c')
-
 cwd = GetCurrentDir()
-path = [cwd, os.path.join(cwd, 'inc')]
+src = Glob('src/*.c')
+cpppath = [cwd, os.path.join(cwd, 'inc')]
 
-group = DefineGroup('app', src, CPPPATH=path)
+group = DefineGroup('app', src, CPPPATH=cpppath)
 
 for script in FindChildScripts(cwd):
     SConscript(script)

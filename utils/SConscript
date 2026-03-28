@@ -1,7 +1,7 @@
 from building import *
 
 cwd = GetCurrentDir()
-sources = Glob('*.c')
-group = DefineGroup('utils', sources, CPPPATH=[cwd])
+src = Glob('*.c')
+group = DefineGroup('utils', src, CPPPATH=[cwd])
 
 Return('group')
