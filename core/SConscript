@@ -1,7 +1,11 @@
+import os
+
 from building import *
 
 cwd = GetCurrentDir()
 src = Glob('*.c')
-group = DefineGroup('core', src, CPPPATH=[cwd])
+cpppath = [os.path.join(cwd, 'inc')]
+
+group = DefineGroup('core', src, CPPPATH=cpppath)
 
 Return('group')

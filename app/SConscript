@@ -4,7 +4,7 @@ from building import *
 
 cwd = GetCurrentDir()
 src = Glob('src/*.c')
-cpppath = [cwd, os.path.join(cwd, 'inc')]
+cpppath = [os.path.join(cwd, 'inc')]
 
 group = DefineGroup('app', src, CPPPATH=cpppath)
 
