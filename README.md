@@ -75,7 +75,7 @@ build/compile_commands.json
 ## 说明
 
 - 当前链接脚本路径规则为 `targets/<target_mcu>/links/<ChipDefine>_FLASH.ld`
-- `targets/stm32f4/SConscript` 会通过 `DefineGroup` 注册 `system_stm32f4xx.c` 和对应芯片的 `startup_<target_chip>.s`
+- `targets/SConscript` 会根据 `target_mcu` 注册对应目标的启动文件和系统文件
 - `drivers/` 和 `bsp/` 目录目前作为后续扩展入口预留
 - 当前精简版构建辅助函数位于 `toolchain/building.py`
 

@@ -36,7 +36,7 @@
 - `core/SConscript`
 - `utils/SConscript`
 - `app/SConscript`
-- `targets/<target_mcu>/SConscript`
+- `targets/SConscript`
 
 其中 `app/SConscript` 还会通过 `FindChildScripts()` 自动加载 `app/` 下直接子目录里的 `SConscript`。
 
@@ -242,15 +242,15 @@ Return('group')
 
 ### 8.2 `target`
 
-`targets/stm32f4/SConscript` 当前会注册：
+`targets/SConscript` 当前会根据 `target_mcu` 注册：
 
 - `cmsis/Source/Templates/system_stm32f4xx.c`
 - `cmsis/Source/Templates/gcc/startup_<target_chip>.s`
 
 同时导出这些头文件路径：
 
-- `targets/stm32f4/cmsis/Include`
-- `targets/stm32f4/hal/Inc`
+- `targets/<target_mcu>/cmsis/Include`
+- `targets/<target_mcu>/hal/Inc`
 - `targets/cmsis_core`
 
 ## 9. 常用命令

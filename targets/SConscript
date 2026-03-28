@@ -1,0 +1,23 @@
+import os
+
+from building import *
+
+Import('target_chip', 'target_mcu')
+
+sources = [
+    File(f'{target_mcu}/cmsis/Source/Templates/system_stm32f4xx.c'),
+    File(f'{target_mcu}/cmsis/Source/Templates/gcc/startup_{target_chip}.s'),
+]
+
+cwd = GetCurrentDir()
+group = DefineGroup(
+    'target',
+    sources,
+    CPPPATH=[
+        os.path.join(cwd, target_mcu, 'cmsis', 'Include'),
+        os.path.join(cwd, target_mcu, 'hal', 'Inc'),
+        os.path.join(cwd, 'cmsis_core'),
+    ],
+)
+
+Return('group')
