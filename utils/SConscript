@@ -1,5 +1,7 @@
-Import('env')
+from building import *
 
+cwd = GetCurrentDir()
 sources = Glob('*.c')
+group = DefineGroup('utils', sources, CPPPATH=[cwd])
 
-Return('sources')
+Return('group')

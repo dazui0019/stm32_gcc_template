@@ -1,8 +1,23 @@
-Import('env', 'target_chip')
+import os
+
+from building import *
+
+Import('target_chip')
 
 sources = [
     File('cmsis/Source/Templates/system_stm32f4xx.c'),
     File(f'cmsis/Source/Templates/gcc/startup_{target_chip}.s'),
 ]
 
-Return('sources')
+cwd = GetCurrentDir()
+group = DefineGroup(
+    'target',
+    sources,
+    CPPPATH=[
+        os.path.join(cwd, 'cmsis', 'Include'),
+        os.path.join(cwd, 'hal', 'Inc'),
+        '#/targets/cmsis_core',
+    ],
+)
+
+Return('group')

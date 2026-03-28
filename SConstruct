@@ -1,10 +1,20 @@
 import os
+import sys
+
+# get building.py
+cwd = Dir('#').abspath
+sys.path.insert(0, os.path.join(cwd, 'toolchain'))
+
+try:
+    from building import *
+except:
+    print('Cannot found toolchain directory')
+    exit(-1)
 
 # Top-level build switches. These can be overridden from the SCons command line.
 target_mcu = ARGUMENTS.get('target_mcu', 'stm32f4')
 target_chip = ARGUMENTS.get('target_chip', 'stm32f446xx')
 board_name = ARGUMENTS.get('board', 'test_board_v1')
-# Keep all generated artifacts under a single build tree.
 build_dir = 'build'
 
 toolchain_bin = os.path.abspath(
@@ -35,26 +45,14 @@ env = Environment(
 )
 
 env.Tool('compilation_db')
-# Emit absolute paths so clangd / IDE tooling can resolve files reliably.
 env['COMPILATIONDB_USE_ABSPATH'] = True
 
 chip_define = 'STM32F' + target_chip[len('stm32f'):]
 linker_script = os.path.join('targets', target_mcu, 'links', f'{chip_define}_FLASH.ld')
 map_file = os.path.join(build_dir, 'firmware.map')
 
-# Project-wide include roots shared by every module SConscript.
-env.AppendUnique(
-    CPPPATH=[
-        '#/drivers/hal/include',
-        '#/core',
-        f'#/targets/{target_mcu}/hal/Inc',
-        f'#/targets/{target_mcu}/cmsis/Include',
-        '#/targets/cmsis_core',
-    ]
-)
-
 env.Append(
-    CPPDEFINES=[chip_define, 'USE_LL_DRIVER'],
+    CPPDEFINES=[chip_define, 'USE_FULL_LL_DRIVER'],
 )
 
 # C compilation flags for all project sources.
@@ -103,38 +101,14 @@ env.Append( LINKFLAGS = [
 
 Export('env', 'target_chip')
 
-sources = []
-
-# Each module contributes source files only; the top-level script owns object output paths.
 for script in [
-    os.path.join('app', 'SConscript'),
     os.path.join('core', 'SConscript'),
     os.path.join('utils', 'SConscript'),
-    os.path.join('drivers', 'hal', target_mcu, 'SConscript'),
+    os.path.join('app', 'SConscript'),
     os.path.join('targets', target_mcu, 'SConscript'),
-    os.path.join('bsp', board_name, 'SConscript'),
 ]:
     if os.path.exists(script):
-        sources += SConscript(script)
+        SConscript(script)
 
-objects = []
-
-# Mirror the source tree under build/ so intermediate .o files never pollute source folders.
-for source in sources:
-    source_path = source.srcnode().path
-    object_path = os.path.join(
-        build_dir,
-        os.path.splitext(source_path)[0] + env['OBJSUFFIX'],
-    )
-    objects += env.Object(object_path, source)
-
-# Final default outputs: ELF, raw binary image, and compile database for editor tooling.
-elf = env.Program(os.path.join(build_dir, 'firmware.elf'), objects)
-firmware_bin = env.Command(
-    os.path.join(build_dir, 'firmware.bin'),
-    elf,
-    '$OBJCOPY -O binary $SOURCE $TARGET',
-)
-compdb = env.CompilationDatabase(os.path.join(build_dir, 'compile_commands.json'))
-
-Default([elf, firmware_bin, compdb])
+targets = BuildFirmware(env, build_dir, groups=GetProjects())
+Default(targets)

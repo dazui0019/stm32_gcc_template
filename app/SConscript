@@ -1,5 +1,14 @@
-Import('env')
+import os
+from building import *
 
-sources = Glob('*.c')
+src = Glob('src/*.c')
 
-Return('sources')
+cwd = GetCurrentDir()
+path = [cwd, os.path.join(cwd, 'inc')]
+
+group = DefineGroup('app', src, CPPPATH=path)
+
+for script in FindChildScripts(cwd):
+    SConscript(script)
+
+Return('group')

@@ -6,8 +6,10 @@
 
 - `SConstruct` 统一管理工具链、头文件路径、编译参数和链接参数
 - 支持通过 `target_mcu` 和 `target_chip` 选择目标
-- 各模块 `SConscript` 只返回源文件，顶层统一生成对象文件
+- 提供一个精简版、类似 RT-Thread 的 `DefineGroup` 模块注册机制
+- 支持 group 级别的全局导出参数和局部 `LOCAL_*` 编译参数
 - 自动生成 `build/compile_commands.json`
+- 详细构建说明见 [docs/scons.md](docs/scons.md)
 
 ## 目录
 
@@ -15,6 +17,8 @@
 .
 |-- SConstruct
 |-- README.md
+|-- docs/
+|   `-- scons.md
 |-- pyproject.toml
 |-- app/
 |-- core/
@@ -71,5 +75,15 @@ build/compile_commands.json
 ## 说明
 
 - 当前链接脚本路径规则为 `targets/<target_mcu>/links/<ChipDefine>_FLASH.ld`
-- `targets/stm32f4/SConscript` 会返回 `system_stm32f4xx.c` 和对应芯片的 `startup_<target_chip>.s`
+- `targets/stm32f4/SConscript` 会通过 `DefineGroup` 注册 `system_stm32f4xx.c` 和对应芯片的 `startup_<target_chip>.s`
 - `drivers/` 和 `bsp/` 目录目前作为后续扩展入口预留
+- 当前精简版构建辅助函数位于 `toolchain/building.py`
+
+## TODO List
+
+- [ ] 制作类似RT-Thread的Scons框架。
+- [ ] 制作furi like的gpio hal库。
+- [ ] 完成对gd32f4的适配。
+- [ ] 了解gcc编译器参数。
+- [ ] 测试编译后的固件是否可用。
+- [ ] 适配pyocd/openocd
