@@ -1,0 +1,6 @@
+from building import *
+
+cwd = GetCurrentDir()
+
+for script in FindChildScripts(cwd):
+    SConscript(script)

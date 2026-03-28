@@ -35,10 +35,12 @@
 
 - `core/SConscript`
 - `utils/SConscript`
+- `drivers/SConscript`
 - `app/SConscript`
 - `targets/SConscript`
 
 其中 `app/SConscript` 还会通过 `FindChildScripts()` 自动加载 `app/` 下直接子目录里的 `SConscript`。
+`drivers/SConscript` 也会通过 `FindChildScripts()` 分发加载 `drivers/` 下各个驱动库目录里的 `SConscript`。
 
 注意：`FindChildScripts()` 当前只扫描一层子目录，不做全工程递归搜索。
 
@@ -48,11 +50,12 @@
 
 1. `SConstruct` 创建 SCons `Environment`
 2. 顶层依次执行模块 `SConscript`
-3. 每个模块通过 `DefineGroup()` 把自身信息注册到全局 `Projects`
-4. `BuildEnvironment()` 汇总所有 group 的全局导出参数
-5. `BuildGroupObjects()` 为每个 group 生成对象文件
-6. `BuildFirmware()` 统一链接为 `firmware.elf`
-7. 额外生成 `firmware.bin` 和 `compile_commands.json`
+3. 父目录型模块可以继续分发子目录 `SConscript`
+4. 每个实际模块通过 `DefineGroup()` 把自身信息注册到全局 `Projects`
+5. `BuildEnvironment()` 汇总所有 group 的全局导出参数
+6. `BuildGroupObjects()` 为每个 group 生成对象文件
+7. `BuildFirmware()` 统一链接为 `firmware.elf`
+8. 额外生成 `firmware.bin` 和 `compile_commands.json`
 
 对象文件输出路径会镜像源码路径，例如：
 
@@ -203,6 +206,17 @@ module_name/
 `-- src/
 ```
 
+如果某个目录本身只是“模块集合”，例如 `drivers/`，推荐只写成父目录分发器：
+
+```python
+from building import *
+
+cwd = GetCurrentDir()
+
+for script in FindChildScripts(cwd):
+    SConscript(script)
+```
+
 推荐的 `SConscript` 写法：
 
 ```python
@@ -240,7 +254,21 @@ Return('group')
 
 并自动加载 `app` 下子模块的 `SConscript`。
 
-### 8.2 `target`
+### 8.2 `drivers`
+
+`drivers/SConscript` 当前不直接注册源文件，而是作为父目录分发器，自动加载：
+
+- `drivers/foo_hal/SConscript`
+- 后续新增的其它驱动库 `SConscript`
+
+每个驱动库子目录负责自己维护：
+
+- `src/*.c`
+- `inc/`
+- `depend`
+- 自己的 `DefineGroup(...)`
+
+### 8.3 `target`
 
 `targets/SConscript` 当前会根据 `target_mcu` 注册：
 
@@ -330,10 +358,15 @@ group = DefineGroup(
 Return('group')
 ```
 
-3. 在顶层 `SConstruct` 或父级模块里调用它
+3. 由 `drivers/SConscript` 自动分发加载它
 
 ```python
-SConscript(os.path.join('drivers', 'foo', 'SConscript'))
+from building import *
+
+cwd = GetCurrentDir()
+
+for script in FindChildScripts(cwd):
+    SConscript(script)
 ```
 
 ## 12. 当前实现和 RT-Thread 的差异

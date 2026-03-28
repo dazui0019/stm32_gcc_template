@@ -1,0 +1,11 @@
+import os
+
+from building import *
+
+cwd = GetCurrentDir()
+src = Glob('src/*.c')
+cpppath = [cwd, os.path.join(cwd, 'inc')]
+
+group = DefineGroup('foo_hal', src, depend='ENABLE_FOO_HAL', CPPPATH=cpppath)
+
+Return('group')

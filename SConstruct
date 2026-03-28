@@ -104,6 +104,7 @@ Export('env', 'target_chip', 'target_mcu')
 for script in [
     os.path.join('core', 'SConscript'),
     os.path.join('utils', 'SConscript'),
+    os.path.join('drivers', 'SConscript'),
     os.path.join('app', 'SConscript'),
     os.path.join('targets', 'SConscript'),
 ]:

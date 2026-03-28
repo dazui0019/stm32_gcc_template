@@ -22,6 +22,7 @@
 |-- pyproject.toml
 |-- app/
 |-- core/
+|-- drivers/
 |-- utils/
 |-- targets/
 |   |-- cmsis_core/
@@ -76,7 +77,9 @@ build/compile_commands.json
 
 - 当前链接脚本路径规则为 `targets/<target_mcu>/links/<ChipDefine>_FLASH.ld`
 - `targets/SConscript` 会根据 `target_mcu` 注册对应目标的启动文件和系统文件
-- `drivers/` 和 `bsp/` 目录目前作为后续扩展入口预留
+- `drivers/SConscript` 作为父目录分发器，负责加载各个驱动库子目录
+- 每个驱动库目录独立维护自己的 `src/`、`inc/` 和 `SConscript`
+- `bsp/` 目录目前作为后续扩展入口预留
 - 当前精简版构建辅助函数位于 `toolchain/building.py`
 
 ## TODO List
