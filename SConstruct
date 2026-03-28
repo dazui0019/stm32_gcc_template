@@ -112,4 +112,12 @@ for script in [
         SConscript(script)
 
 targets = BuildFirmware(env, build_dir, groups=GetProjects())
+elf = targets[0]
+targets.append(
+    env.Command(
+        os.path.join(build_dir, 'firmware.hex'),
+        elf,
+        '$OBJCOPY -O ihex $SOURCE $TARGET',
+    )
+)
 Default(targets)
