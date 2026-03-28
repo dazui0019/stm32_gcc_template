@@ -1,8 +1,8 @@
 #pragma once
 #include "stdbool.h"
-#include <stm32wbxx_ll_gpio.h>
-#include <stm32wbxx_ll_system.h>
-#include <stm32wbxx_ll_exti.h>
+#include <stm32f4xx_ll_gpio.h>
+#include <stm32f4xx_ll_system.h>
+#include <stm32f4xx_ll_exti.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -65,94 +65,82 @@ typedef enum {
 
 /**
  * Gpio alternate functions
+ *
+ * Aligned with STM32F446xx official GPIO_AFx_* definitions.
  */
 typedef enum {
-    GpioAltFn0MCO = 0, /*!< MCO Alternate Function mapping */
-    GpioAltFn0LSCO = 0, /*!< LSCO Alternate Function mapping */
-    GpioAltFn0JTMS_SWDIO = 0, /*!< JTMS-SWDIO Alternate Function mapping */
-    GpioAltFn0JTCK_SWCLK = 0, /*!< JTCK-SWCLK Alternate Function mapping */
-    GpioAltFn0JTDI = 0, /*!< JTDI Alternate Function mapping */
-    GpioAltFn0RTC_OUT = 0, /*!< RCT_OUT Alternate Function mapping */
-    GpioAltFn0JTD_TRACE = 0, /*!< JTDO-TRACESWO Alternate Function mapping */
-    GpioAltFn0NJTRST = 0, /*!< NJTRST Alternate Function mapping */
-    GpioAltFn0RTC_REFIN = 0, /*!< RTC_REFIN Alternate Function mapping */
-    GpioAltFn0TRACED0 = 0, /*!< TRACED0 Alternate Function mapping */
-    GpioAltFn0TRACED1 = 0, /*!< TRACED1 Alternate Function mapping */
-    GpioAltFn0TRACED2 = 0, /*!< TRACED2 Alternate Function mapping */
-    GpioAltFn0TRACED3 = 0, /*!< TRACED3 Alternate Function mapping */
-    GpioAltFn0TRIG_INOUT = 0, /*!< TRIG_INOUT Alternate Function mapping */
-    GpioAltFn0TRACECK = 0, /*!< TRACECK Alternate Function mapping */
-    GpioAltFn0SYS = 0, /*!< System Function mapping */
+    GpioAltFn0RTC_50Hz = 0, /*!< RTC_50Hz Alternate Function mapping */
+    GpioAltFn0MCO = 0, /*!< MCO (MCO1 and MCO2) Alternate Function mapping */
+    GpioAltFn0TAMPER = 0, /*!< TAMPER (TAMPER_1 and TAMPER_2) Alternate Function mapping */
+    GpioAltFn0SWJ = 0, /*!< SWJ (SWD and JTAG) Alternate Function mapping */
+    GpioAltFn0TRACE = 0, /*!< TRACE Alternate Function mapping */
 
     GpioAltFn1TIM1 = 1, /*!< TIM1 Alternate Function mapping */
     GpioAltFn1TIM2 = 1, /*!< TIM2 Alternate Function mapping */
-    GpioAltFn1LPTIM1 = 1, /*!< LPTIM1 Alternate Function mapping */
 
-    GpioAltFn2TIM2 = 2, /*!< TIM2 Alternate Function mapping */
-    GpioAltFn2TIM1 = 2, /*!< TIM1 Alternate Function mapping */
+    GpioAltFn2TIM3 = 2, /*!< TIM3 Alternate Function mapping */
+    GpioAltFn2TIM4 = 2, /*!< TIM4 Alternate Function mapping */
+    GpioAltFn2TIM5 = 2, /*!< TIM5 Alternate Function mapping */
 
-    GpioAltFn3SAI1 = 3, /*!< SAI1_CK1 Alternate Function mapping */
-    GpioAltFn3SPI2 = 3, /*!< SPI2 Alternate Function mapping */
-    GpioAltFn3TIM1 = 3, /*!< TIM1 Alternate Function mapping */
+    GpioAltFn3TIM8 = 3, /*!< TIM8 Alternate Function mapping */
+    GpioAltFn3TIM9 = 3, /*!< TIM9 Alternate Function mapping */
+    GpioAltFn3TIM10 = 3, /*!< TIM10 Alternate Function mapping */
+    GpioAltFn3TIM11 = 3, /*!< TIM11 Alternate Function mapping */
+    GpioAltFn3CEC = 3, /*!< CEC Alternate Function mapping */
 
     GpioAltFn4I2C1 = 4, /*!< I2C1 Alternate Function mapping */
+    GpioAltFn4I2C2 = 4, /*!< I2C2 Alternate Function mapping */
     GpioAltFn4I2C3 = 4, /*!< I2C3 Alternate Function mapping */
+    GpioAltFn4FMPI2C1 = 4, /*!< FMPI2C1 Alternate Function mapping */
+    GpioAltFn4CEC = 4, /*!< CEC Alternate Function mapping */
 
-    GpioAltFn5SPI1 = 5, /*!< SPI1 Alternate Function mapping */
-    GpioAltFn5SPI2 = 5, /*!< SPI2 Alternate Function mapping */
+    GpioAltFn5SPI1 = 5, /*!< SPI1/I2S1 Alternate Function mapping */
+    GpioAltFn5SPI2 = 5, /*!< SPI2/I2S2 Alternate Function mapping */
+    GpioAltFn5SPI3 = 5, /*!< SPI3/I2S3 Alternate Function mapping */
+    GpioAltFn5SPI4 = 5, /*!< SPI4 Alternate Function mapping */
 
-    GpioAltFn6MCO = 6, /*!< MCO Alternate Function mapping */
-    GpioAltFn6LSCO = 6, /*!< LSCO Alternate Function mapping */
-    GpioAltFn6RF_DTB0 = 6, /*!< RF_DTB0 Alternate Function mapping */
-    GpioAltFn6RF_DTB1 = 6, /*!< RF_DTB1 Alternate Function mapping */
-    GpioAltFn6RF_DTB2 = 6, /*!< RF_DTB2 Alternate Function mapping */
-    GpioAltFn6RF_DTB3 = 6, /*!< RF_DTB3 Alternate Function mapping */
-    GpioAltFn6RF_DTB4 = 6, /*!< RF_DTB4 Alternate Function mapping */
-    GpioAltFn6RF_DTB5 = 6, /*!< RF_DTB5 Alternate Function mapping */
-    GpioAltFn6RF_DTB6 = 6, /*!< RF_DTB6 Alternate Function mapping */
-    GpioAltFn6RF_DTB7 = 6, /*!< RF_DTB7 Alternate Function mapping */
-    GpioAltFn6RF_DTB8 = 6, /*!< RF_DTB8 Alternate Function mapping */
-    GpioAltFn6RF_DTB9 = 6, /*!< RF_DTB9 Alternate Function mapping */
-    GpioAltFn6RF_DTB10 = 6, /*!< RF_DTB10 Alternate Function mapping */
-    GpioAltFn6RF_DTB11 = 6, /*!< RF_DTB11 Alternate Function mapping */
-    GpioAltFn6RF_DTB12 = 6, /*!< RF_DTB12 Alternate Function mapping */
-    GpioAltFn6RF_DTB13 = 6, /*!< RF_DTB13 Alternate Function mapping */
-    GpioAltFn6RF_DTB14 = 6, /*!< RF_DTB14 Alternate Function mapping */
-    GpioAltFn6RF_DTB15 = 6, /*!< RF_DTB15 Alternate Function mapping */
-    GpioAltFn6RF_DTB16 = 6, /*!< RF_DTB16 Alternate Function mapping */
-    GpioAltFn6RF_DTB17 = 6, /*!< RF_DTB17 Alternate Function mapping */
-    GpioAltFn6RF_DTB18 = 6, /*!< RF_DTB18 Alternate Function mapping */
-    GpioAltFn6RF_MISO = 6, /*!< RF_MISO Alternate Function mapping */
-    GpioAltFn6RF_MOSI = 6, /*!< RF_MOSI Alternate Function mapping */
-    GpioAltFn6RF_SCK = 6, /*!< RF_SCK Alternate Function mapping */
-    GpioAltFn6RF_NSS = 6, /*!< RF_NSS Alternate Function mapping */
+    GpioAltFn6SPI2 = 6, /*!< SPI2/I2S2 Alternate Function mapping */
+    GpioAltFn6SPI3 = 6, /*!< SPI3/I2S3 Alternate Function mapping */
+    GpioAltFn6SPI4 = 6, /*!< SPI4 Alternate Function mapping */
+    GpioAltFn6SAI1 = 6, /*!< SAI1 Alternate Function mapping */
 
     GpioAltFn7USART1 = 7, /*!< USART1 Alternate Function mapping */
+    GpioAltFn7USART2 = 7, /*!< USART2 Alternate Function mapping */
+    GpioAltFn7USART3 = 7, /*!< USART3 Alternate Function mapping */
+    GpioAltFn7UART5 = 7, /*!< UART5 Alternate Function mapping */
+    GpioAltFn7SPI2 = 7, /*!< SPI2/I2S2 Alternate Function mapping */
+    GpioAltFn7SPI3 = 7, /*!< SPI3/I2S3 Alternate Function mapping */
+    GpioAltFn7SPDIFRX = 7, /*!< SPDIFRX Alternate Function mapping */
 
-    GpioAltFn8LPUART1 = 8, /*!< LPUART1 Alternate Function mapping */
-    GpioAltFn8IR = 8, /*!< IR Alternate Function mapping */
+    GpioAltFn8UART4 = 8, /*!< UART4 Alternate Function mapping */
+    GpioAltFn8UART5 = 8, /*!< UART5 Alternate Function mapping */
+    GpioAltFn8USART6 = 8, /*!< USART6 Alternate Function mapping */
+    GpioAltFn8SPDIFRX = 8, /*!< SPDIFRX Alternate Function mapping */
+    GpioAltFn8SAI2 = 8, /*!< SAI2 Alternate Function mapping */
 
-    GpioAltFn9TSC = 9, /*!< TSC Alternate Function mapping */
+    GpioAltFn9CAN1 = 9, /*!< CAN1 Alternate Function mapping */
+    GpioAltFn9CAN2 = 9, /*!< CAN2 Alternate Function mapping */
+    GpioAltFn9TIM12 = 9, /*!< TIM12 Alternate Function mapping */
+    GpioAltFn9TIM13 = 9, /*!< TIM13 Alternate Function mapping */
+    GpioAltFn9TIM14 = 9, /*!< TIM14 Alternate Function mapping */
+    GpioAltFn9QSPI = 9, /*!< QSPI Alternate Function mapping */
 
-    GpioAltFn10QUADSPI = 10, /*!< QUADSPI Alternate Function mapping */
-    GpioAltFn10USB = 10, /*!< USB Alternate Function mapping */
+    GpioAltFn10OTG_FS = 10, /*!< OTG_FS Alternate Function mapping */
+    GpioAltFn10OTG_HS = 10, /*!< OTG_HS Alternate Function mapping */
+    GpioAltFn10SAI2 = 10, /*!< SAI2 Alternate Function mapping */
+    GpioAltFn10QSPI = 10, /*!< QSPI Alternate Function mapping */
 
-    GpioAltFn11LCD = 11, /*!< LCD Alternate Function mapping */
+    GpioAltFn11ETH = 11, /*!< ETHERNET Alternate Function mapping */
 
-    GpioAltFn12COMP1 = 12, /*!< COMP1 Alternate Function mapping */
-    GpioAltFn12COMP2 = 12, /*!< COMP2 Alternate Function mapping */
-    GpioAltFn12TIM1 = 12, /*!< TIM1 Alternate Function mapping */
+    GpioAltFn12FMC = 12, /*!< FMC Alternate Function mapping */
+    GpioAltFn12OTG_HS_FS = 12, /*!< OTG HS configured in FS Alternate Function mapping */
+    GpioAltFn12SDIO = 12, /*!< SDIO Alternate Function mapping */
 
-    GpioAltFn13SAI1 = 13, /*!< SAI1 Alternate Function mapping */
-
-    GpioAltFn14TIM2 = 14, /*!< TIM2 Alternate Function mapping */
-    GpioAltFn14TIM16 = 14, /*!< TIM16 Alternate Function mapping */
-    GpioAltFn14TIM17 = 14, /*!< TIM17 Alternate Function mapping */
-    GpioAltFn14LPTIM2 = 14, /*!< LPTIM2 Alternate Function mapping */
+    GpioAltFn13DCMI = 13, /*!< DCMI Alternate Function mapping */
 
     GpioAltFn15EVENTOUT = 15, /*!< EVENTOUT Alternate Function mapping */
 
-    GpioAltFnUnused = 16, /*!< just dummy value */
+    GpioAltFnUnused = 16, /*!< Dummy value, not a hardware AF */
 } GpioAltFn;
 
 /**
