@@ -18,10 +18,9 @@ board_name = ARGUMENTS.get('board', 'test_board_v1')
 build_dir = 'build'
 
 toolchain_bin = os.path.abspath(
-    # os.path.join()用来拼接路径
     os.path.join(
         'toolchain',
-        'mingw-w64-i686-arm-none-eabi',
+        'mingw-w64-x86_64-arm-none-eabi',
         'bin',
     )
 )
