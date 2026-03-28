@@ -5,10 +5,15 @@ from building import *
 Import('target_chip', 'target_mcu')
 
 cwd = GetCurrentDir()
+hal_src = [
+    source
+    for source in Glob(os.path.join(target_mcu, 'hal', 'Src', '*.c'))
+    if not str(source).endswith('_template.c')
+]
 src = [
     File(os.path.join(target_mcu, 'cmsis', 'Source', 'Templates', 'system_stm32f4xx.c')),
     File(os.path.join(target_mcu, 'cmsis', 'Source', 'Templates', 'gcc', f'startup_{target_chip}.s')),
-]
+] + hal_src
 cpppath = [
     os.path.join(cwd, target_mcu, 'cmsis', 'Include'),
     os.path.join(cwd, target_mcu, 'hal', 'Inc'),

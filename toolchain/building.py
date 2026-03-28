@@ -220,7 +220,10 @@ def BuildFirmware(
             build_env.Command(
                 os.path.join(build_dir, program_name + '.bin'),
                 elf,
-                '$OBJCOPY -O binary $SOURCE $TARGET',
+                Action(
+                    '$OBJCOPY -O binary $SOURCE $TARGET',
+                    cmdstr=None,
+                ),
             )
         )
 

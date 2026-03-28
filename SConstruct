@@ -1,5 +1,6 @@
 import os
 import sys
+from SCons.Script import Action
 
 # get building.py
 cwd = Dir('#').abspath
@@ -16,6 +17,8 @@ target_mcu = ARGUMENTS.get('target_mcu', 'stm32f4')
 target_chip = ARGUMENTS.get('target_chip', 'stm32f446xx')
 board_name = ARGUMENTS.get('board', 'test_board_v1')
 build_dir = 'build'
+verbose_arg = str(ARGUMENTS.get('verbose', ARGUMENTS.get('V', '0'))).lower()
+verbose_build = verbose_arg not in ('', '0', 'false', 'no')
 
 toolchain_bin = os.path.abspath(
     os.path.join(
@@ -43,6 +46,21 @@ env = Environment(
     PROGSUFFIX='.elf',
 )
 
+if not verbose_build:
+    env.Replace(
+        CCCOMSTR='CC      $SOURCE',
+        CXXCOMSTR='CXX     $SOURCE',
+        ASCOMSTR='AS      $SOURCE',
+        ASPPCOMSTR='AS      $SOURCE',
+        ARCOMSTR='AR      $TARGET',
+        RANLIBCOMSTR='RANLIB  $TARGET',
+        LINKCOMSTR='LD      $TARGET',
+        SHCCCOMSTR='SHCC    $SOURCE',
+        SHCXXCOMSTR='SHCXX   $SOURCE',
+        SHLINKCOMSTR='SHLD    $TARGET',
+        COMPILATIONDB_COMSTR=None,
+    )
+
 env.Tool('compilation_db')
 env['COMPILATIONDB_USE_ABSPATH'] = True
 
@@ -51,7 +69,7 @@ linker_script = os.path.join('targets', target_mcu, 'links', f'{chip_define}_FLA
 map_file = os.path.join(build_dir, 'firmware.map')
 
 env.Append(
-    CPPDEFINES=[chip_define, 'USE_FULL_LL_DRIVER'],
+    CPPDEFINES=[chip_define, 'USE_HAL_DRIVER'],
 )
 
 # C compilation flags for all project sources.
@@ -117,7 +135,10 @@ targets.append(
     env.Command(
         os.path.join(build_dir, 'firmware.hex'),
         elf,
-        '$OBJCOPY -O ihex $SOURCE $TARGET',
+        Action(
+            '$OBJCOPY -O ihex $SOURCE $TARGET',
+            cmdstr=None,
+        ),
     )
 )
 Default(targets)
