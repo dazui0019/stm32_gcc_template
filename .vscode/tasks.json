@@ -1,0 +1,84 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "type": "process",
+            "command": "${workspaceFolder}/.venv/Scripts/scons.exe",
+            "args": [
+                "-Q"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared",
+                "clear": true
+            }
+        },
+        {
+            "label": "clean",
+            "type": "process",
+            "command": "${workspaceFolder}/.venv/Scripts/scons.exe",
+            "args": [
+                "-Q",
+                "--clean"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared",
+                "clear": true
+            }
+        },
+        {
+            "label": "rebuild",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "clean",
+                "build"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "flash",
+            "type": "process",
+            "command": "${workspaceFolder}/.venv/Scripts/pyocd.exe",
+            "args": [
+                "load",
+                "-t",
+                "stm32f446retx",
+                "${workspaceFolder}/build/firmware.hex"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared",
+                "clear": true
+            }
+        },
+        {
+            "label": "build and flash",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "build",
+                "flash"
+            ],
+            "problemMatcher": []
+        }
+    ]
+}

@@ -1,0 +1,17 @@
+{
+    "configurations": [
+        {
+            "cwd": "${workspaceFolder}",
+            "executable": "${workspaceFolder}/build/firmware.elf",
+            "gdbPath": "${workspaceFolder}/toolchain/mingw-w64-x86_64-arm-none-eabi/bin/arm-none-eabi-gdb.exe",
+            "name": "Debug with PyOCD",
+            "request": "launch",
+            "serverpath": "${workspaceFolder}/.venv/Scripts/pyocd.exe",
+            "type": "cortex-debug",
+            "runToEntryPoint": "main",
+            "showDevDebugOutput": "none",
+            "overrideGDBServerStartedRegex": "[Gg][Dd][Bb] [Ss]erver ([Ss]tarted|[Ll]istening) on port",
+            "servertype": "pyocd"
+        }
+    ]
+}
