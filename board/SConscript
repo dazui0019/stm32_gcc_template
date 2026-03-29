@@ -3,7 +3,10 @@ import os
 from building import *
 
 cwd = GetCurrentDir()
-src = Glob('cubemx_config/Core/Src/*.c')
+src = (
+    Glob('cubemx_config/*.s')
+    + Glob('cubemx_config/Core/Src/*.c')
+)
 cpppath = [cwd, os.path.join(cwd, 'cubemx_config', 'Core', 'Inc')]
 
 group = DefineGroup('board', src, CPPPATH=cpppath)
