@@ -12,3 +12,8 @@ __pycache__/
 *.pyc
 *.map
 build/
+
+board/cubemx_config/*
+!board/cubemx_config/cubemx_config.ioc
+!board/cubemx_config/Core/
+!board/cubemx_config/Core/**

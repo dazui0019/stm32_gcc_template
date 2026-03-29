@@ -1,8 +1,7 @@
 #include <foo_hal_gpio.h>
-#include <stm32f4xx_ll_pwr.h>
 
 static uint32_t foo_hal_gpio_invalid_argument_crash(void) {
-    foo_crash("Invalid argument");
+    // foo_crash("Invalid argument");
     return 0;
 }
 
@@ -84,9 +83,6 @@ void foo_hal_gpio_init_ex(
     const uint32_t pwr_pin = GET_PWR_PIN(gpio->pin);
     #endif
     
-    // Configure gpio with interrupts disabled
-    FOO_CRITICAL_ENTER();
-
     // Set gpio speed
     switch(speed) {
     case GpioSpeedLow:
@@ -197,14 +193,11 @@ void foo_hal_gpio_init_ex(
             foo_crash("Incorrect GpioMode");
         }
     }
-    FOO_CRITICAL_EXIT();
 }
 
 void foo_hal_gpio_add_int_callback(const GpioPin* gpio, GpioExtiCallback cb, void* ctx) {
     foo_check(gpio);
     foo_check(cb);
-
-    FOO_CRITICAL_ENTER();
 
     uint8_t pin_num = foo_hal_gpio_get_pin_num(gpio);
     foo_check(gpio_interrupt[pin_num].callback == NULL);
@@ -213,37 +206,25 @@ void foo_hal_gpio_add_int_callback(const GpioPin* gpio, GpioExtiCallback cb, voi
 
     const uint32_t exti_line = GET_EXTI_LINE(gpio->pin);
     LL_EXTI_EnableIT_0_31(exti_line);
-
-    FOO_CRITICAL_EXIT();
 }
 
 void foo_hal_gpio_enable_int_callback(const GpioPin* gpio) {
     foo_check(gpio);
 
-    FOO_CRITICAL_ENTER();
-
     const uint32_t exti_line = GET_EXTI_LINE(gpio->pin);
     LL_EXTI_EnableIT_0_31(exti_line);
-
-    FOO_CRITICAL_EXIT();
 }
 
 void foo_hal_gpio_disable_int_callback(const GpioPin* gpio) {
     foo_check(gpio);
 
-    FOO_CRITICAL_ENTER();
-
     const uint32_t exti_line = GET_EXTI_LINE(gpio->pin);
     LL_EXTI_DisableIT_0_31(exti_line);
     LL_EXTI_ClearFlag_0_31(exti_line);
-
-    FOO_CRITICAL_EXIT();
 }
 
 void foo_hal_gpio_remove_int_callback(const GpioPin* gpio) {
     foo_check(gpio);
-
-    FOO_CRITICAL_ENTER();
 
     const uint32_t exti_line = GET_EXTI_LINE(gpio->pin);
     LL_EXTI_DisableIT_0_31(exti_line);
@@ -252,8 +233,6 @@ void foo_hal_gpio_remove_int_callback(const GpioPin* gpio) {
     uint8_t pin_num = foo_hal_gpio_get_pin_num(gpio);
     gpio_interrupt[pin_num].callback = NULL;
     gpio_interrupt[pin_num].context = NULL;
-
-    FOO_CRITICAL_EXIT();
 }
 
 FOO_ALWAYS_INLINE static void foo_hal_gpio_int_call(uint16_t pin_num) {

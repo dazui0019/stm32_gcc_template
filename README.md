@@ -11,6 +11,13 @@
 - 自动生成 `build/compile_commands.json`
 - 详细构建说明见 [docs/scons.md](docs/scons.md)
 
+## 当前状态
+
+- 当前工程优先复用 CubeMX 生成的启动、系统初始化和外设相关代码，作为模板工程的基础可运行版本
+- CubeMX 生成代码当前主要放在 `board/cubemx_config/`
+- `foo_hal` 仍处于逐步整理和补全阶段，现阶段会先与 CubeMX 生成代码并存使用
+- 后续会把通用能力逐步沉淀到 `drivers/foo_hal/`，再逐步减少对 CubeMX 直接生成代码的依赖
+
 ## 目录
 
 ```text
@@ -96,7 +103,7 @@ build/compile_commands.json
 ## TODO List
 
 - [ ] 制作类似RT-Thread的Scons框架。
-- [ ] 制作furi like的gpio hal库。
+- [ ] 逐步完善 `foo_hal`，补齐通用 GPIO/HAL 接口能力。
 - [ ] 完成对gd32f4的适配。
 - [ ] 了解gcc编译器参数。
 - [ ] 测试编译后的固件是否可用。

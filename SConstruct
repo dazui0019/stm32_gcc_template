@@ -69,7 +69,7 @@ linker_script = os.path.join('targets', target_mcu, 'links', f'{chip_define}_FLA
 map_file = os.path.join(build_dir, 'firmware.map')
 
 env.Append(
-    CPPDEFINES=[chip_define, 'USE_HAL_DRIVER'],
+    CPPDEFINES=[chip_define, 'USE_FULL_LL_DRIVER', 'USE_FULL_HAL_DRIVER'],
 )
 
 # C compilation flags for all project sources.
@@ -125,6 +125,7 @@ for script in [
     os.path.join('drivers', 'SConscript'),
     os.path.join('app', 'SConscript'),
     os.path.join('targets', 'SConscript'),
+    os.path.join('board', 'SConscript'),
 ]:
     if os.path.exists(script):
         SConscript(script)

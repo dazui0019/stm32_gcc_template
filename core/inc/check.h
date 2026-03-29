@@ -35,7 +35,6 @@ noreturn void __foo_halt_implementation(void);
     do {                                                      \
         register const void* r12 asm("r12") = (void*)message; \
         asm volatile("sukima%=:" : : "r"(r12));               \
-        __foo_crash_implementation();                         \
     } while(0)
 
 /** Crash system
@@ -49,7 +48,6 @@ noreturn void __foo_halt_implementation(void);
     do {                                                      \
         register const void* r12 asm("r12") = (void*)message; \
         asm volatile("sukima%=:" : : "r"(r12));               \
-        __foo_halt_implementation();                          \
     } while(0)
 
 /** Halt system
