@@ -1,12 +1,13 @@
 #include "app.h"
+#include "main.h"
 
 int setup(void)
 {
     return 0;
 }
 
-int loop(void)
+void loop(void)
 {
-    for(;;){}
-    return 0;
+    HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
+    HAL_Delay(100);
 }
