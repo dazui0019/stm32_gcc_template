@@ -1,8 +1,6 @@
 # 工具链
-toolchain/
-!toolchain/
 toolchain/*
-!toolchain/building.py
+
 .sconsign.dblite
 *.o
 *.elf

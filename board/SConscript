@@ -1,6 +1,6 @@
 import os
 
-from building import *
+from scripts.building import *
 
 cwd = GetCurrentDir()
 src = (

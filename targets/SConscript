@@ -1,6 +1,6 @@
 import os
 
-from building import *
+from scripts.building import *
 
 Import('target_chip', 'target_mcu')
 
