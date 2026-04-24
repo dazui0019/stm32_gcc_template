@@ -108,3 +108,9 @@ build/compile_commands.json
 - [ ] 了解gcc编译器参数。
 - [ ] 测试编译后的固件是否可用。
 - [ ] 适配pyocd/openocd
+
+## History
+
+### 2026/04/24
+
+1. 增加`STM32 CubeMX`的`project generate`脚本。

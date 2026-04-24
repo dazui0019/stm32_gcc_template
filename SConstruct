@@ -1,16 +1,8 @@
 import os
 import sys
 from SCons.Script import Action
-
-# get building.py
-cwd = Dir('#').abspath
-sys.path.insert(0, os.path.join(cwd, 'toolchain'))
-
-try:
-    from building import *
-except:
-    print('Cannot found toolchain directory')
-    exit(-1)
+from scripts.cubemx_tool import *
+from scripts.building import *
 
 # Top-level build switches. These can be overridden from the SCons command line.
 target_mcu = ARGUMENTS.get('target_mcu', 'stm32f4')
@@ -36,7 +28,7 @@ if not target_chip.startswith('stm32f'):
 
 # Use GCC as the compiler/link driver, and GNU as for raw .s startup files.
 env = Environment(
-    # tools=['default', 'ninja'],
+    tools=['gcc', 'g++', 'gnulink', 'ar', 'as'],
     CC=os.path.join(toolchain_bin, 'arm-none-eabi-gcc.exe'),
     AS=os.path.join(toolchain_bin, 'arm-none-eabi-as.exe'),
     AR=os.path.join(toolchain_bin, 'arm-none-eabi-ar.exe'),
@@ -118,6 +110,10 @@ env.Append( LINKFLAGS = [
 
 Export('env', 'target_chip', 'target_mcu')
 
+# 执行 CubeMX 生成代码
+generate_with_cubemx(".\\board\\cubemx_config\\cubemx_config.ioc")
+
+# 寻找子脚本
 for script in [
     os.path.join('core', 'SConscript'),
     os.path.join('utils', 'SConscript'),
